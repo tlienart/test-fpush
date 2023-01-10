@@ -54,4 +54,4 @@ jobs:
         rm -rf __tmp__site
     - name: Push
       run: |
-        git add -A && git commit -am "update" && git push
+        git add -A && git commit -am "update" && git push -u origin gh-preview
