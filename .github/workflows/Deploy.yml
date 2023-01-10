@@ -19,10 +19,12 @@ jobs:
     - run: julia -e '
             using Pkg; Pkg.add("Franklin"); using Franklin;
             optimize(minify=false,prerender=false)'
-    - run: pwd
-      shell: bash
-    - run: ls -aoh
-      shell: bash
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: franklin-site
+        path: __site
+
 
     # - name: Build and Deploy
     #   uses: JamesIves/github-pages-deploy-action@releases/v3
