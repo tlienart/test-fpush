@@ -26,30 +26,30 @@ jobs:
         path: __site
 
   deploy:
+    concurrency: ci-${{ github.ref }}
+    needs: [builds-and-upload]
     runs-on: ubuntu-latest # or mac
     permissions:
       contents: write
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        ref: 'gh-preview'
+    - name: Git setup
+      run: |
+        git config user.name "GABot"
+        git config user.email "<>"
+    - name: Checkout preview
+      run: |
+        git checkout -B gh-preview
     - name: Download artifact
       uses: actions/download-artifact@v3
       with:
         name: franklin-site
         path: __tmp__site
     - name: Copy content
-      run: cp -a __tmp__site/. .
-      shell: bash
+      run: |
+        cp -a __tmp__site/. .
     - name: Remove tmp dir
-      run: rm -rf __tmp__site
-      shell: bash
-
-
-    # - name: Build and Deploy
-    #   uses: JamesIves/github-pages-deploy-action@releases/v3
-    #   with:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     BRANCH: gh-pages
-    #     FOLDER: __site
+      run: |
+        rm -rf __tmp__site
+    - name: Push
+      run: |
+        git commit -am "update" && git push
