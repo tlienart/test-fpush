@@ -5,8 +5,8 @@ on:
       - main
       - master
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build-and-upload:
+    runs-on: ubuntu-latest   # could be anything now
     permissions:
       contents: write
     steps:
@@ -18,12 +18,33 @@ jobs:
         version: '1' # Latest stable Julia release.
     - run: julia -e '
             using Pkg; Pkg.add("Franklin"); using Franklin;
-            optimize(minify=false,prerender=false)'
-    - name: Upload
+            optimize(prepath="test-fpush",minify=false,prerender=false)'
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
         name: franklin-site
         path: __site
+
+  deploy:
+    runs-on: ubuntu-latest # or mac
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: 'gh-preview'
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: franklin-site
+        path: __tmp__site
+    - name: Copy content
+      run: cp -a __tmp__site/. .
+      shell: bash
+    - name: Remove tmp dir
+      run: rm -rf __tmp__site
+      shell: bash
 
 
     # - name: Build and Deploy
