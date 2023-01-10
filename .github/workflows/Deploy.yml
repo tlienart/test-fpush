@@ -5,7 +5,7 @@ on:
       - main
       - master
 jobs:
-  build-and-upload:
+  build:
     runs-on: ubuntu-latest   # could be anything now
     permissions:
       contents: write
@@ -27,7 +27,7 @@ jobs:
 
   deploy:
     concurrency: ci-${{ github.ref }}
-    needs: [builds-and-upload]
+    needs: [build]
     runs-on: ubuntu-latest # or mac
     permissions:
       contents: write
